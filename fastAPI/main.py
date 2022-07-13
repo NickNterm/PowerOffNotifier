@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from typing import Optional
 from pydantic import BaseModel
 import models
 from database import engine, SessionLocal
@@ -34,6 +35,14 @@ def get_all_announcement(db=Depends(get_db)):
 @app.get("/latest")
 def get_latest_announcement_by_department(department: str, id: int, db=Depends(get_db)):
     return db.query(models.Announcement).filter(models.Announcement.department == department, models.Announcement.id > id).all()
+
+
+
+@app.get("/count")
+def get_item_count(department: Optional[str] = None, db = Depends(get_db)):
+    if department is not None:
+         return db.query(models.Announcement).filter(models.Announcement.department == department).count()
+    return db.query(models.Announcement).count()
 
 
 @app.get("/{department}")

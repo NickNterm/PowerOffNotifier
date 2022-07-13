@@ -1,0 +1,16 @@
+[Unit]
+Description = my Service
+After = network.target
+
+[Service]
+Type = simple
+WorkingDirectory=/home/iqsoft/PowerOffNotifier
+ExecStart = python -m uvicorn main:app --host 0.0.0.0 --port 3400
+User = iqsoft
+Group = iqsoft
+Restart = on-failure
+RestartSec = 5
+TimeoutStartSec = infinity
+
+[Install]
+WantedBy = multi-user.target
