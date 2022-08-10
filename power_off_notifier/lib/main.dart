@@ -14,18 +14,22 @@ import 'package:workmanager/workmanager.dart';
 
 import 'notification/notification_service.dart';
 
-void checkForAnnouncements() async {
-  if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
+void checkForAnnouncements() {
+  Workmanager().executeTask((task, inputData) async {
+    if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
 
-  pref = await SharedPreferences.getInstance();
-  String department = pref.getString("department") ?? "ΙΩΑΝΝΙΝΩΝ";
-  int id = pref.getInt("latestID") ?? 1;
-  print(id);
-  print(department);
-  Map announcementMap =
-      await Api().apiGetLatestAnnouncementFromDepartment(department, id);
-  Announcement announcement = Announcement.fromAPI(announcementMap);
-  NotificationService().sendNotification(announcement);
+    pref = await SharedPreferences.getInstance();
+    String department = pref.getString("department") ?? "ΙΩΑΝΝΙΝΩΝ";
+    int id = pref.getInt("lastID") ?? 1;
+    print(id);
+    print(department);
+    Map announcementMap =
+        await Api().apiGetLatestAnnouncementFromDepartment(department, id);
+    Announcement announcement = Announcement.fromAPI(announcementMap);
+    await pref.setInt("lastID", announcement.id);
+    NotificationService().sendNotification(announcement);
+    return true;
+  });
 }
 
 String? selectedNotificationPayload;
@@ -35,10 +39,8 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   Workmanager().initialize(
-      checkForAnnouncements, // The top level function, aka callbackDispatcher
-      isInDebugMode:
-          true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-      );
+    checkForAnnouncements, // The top level function, aka callbackDispatcher
+  );
   Workmanager().registerPeriodicTask(
     "task-identifier",
     "simpleTask",
