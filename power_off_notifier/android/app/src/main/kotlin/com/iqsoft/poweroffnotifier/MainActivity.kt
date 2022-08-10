@@ -1,4 +1,4 @@
-package com.example.power_off_notifier
+package com.iqsoft.poweroffnotifier
 
 import io.flutter.embedding.android.FlutterActivity
 

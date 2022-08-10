@@ -1,6 +1,52 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:power_off_notifier/api/api.dart';
+import 'package:power_off_notifier/constants/colors.dart';
+import 'package:power_off_notifier/models/announcement.dart';
+import 'package:power_off_notifier/pages/loading/loading_screen.dart';
+import 'package:power_off_notifier/providers/department_announcements.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
+
+import 'package:workmanager/workmanager.dart';
+
+import 'notification/notification_service.dart';
+
+void checkForAnnouncements() async {
+  if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
+
+  pref = await SharedPreferences.getInstance();
+  String department = pref.getString("department") ?? "ΙΩΑΝΝΙΝΩΝ";
+  int id = pref.getInt("latestID") ?? 1;
+  print(id);
+  print(department);
+  Map announcementMap =
+      await Api().apiGetLatestAnnouncementFromDepartment(department, id);
+  Announcement announcement = Announcement.fromAPI(announcementMap);
+  NotificationService().sendNotification(announcement);
+}
+
+String? selectedNotificationPayload;
+late SharedPreferences pref;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(
+      checkForAnnouncements, // The top level function, aka callbackDispatcher
+      isInDebugMode:
+          true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+      );
+  Workmanager().registerPeriodicTask(
+    "task-identifier",
+    "simpleTask",
+    frequency: const Duration(minutes: 15),
+  );
+  await NotificationService().init();
+
+  //NotificationService().sendNotification();
   runApp(const MyApp());
 }
 
@@ -9,58 +55,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DepartmentAnnouncementsController>(
+          create: (context) => DepartmentAnnouncementsController(),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: kPrimaryColor,
+        ),
+        home: const LoadingScreen(),
       ),
     );
   }
