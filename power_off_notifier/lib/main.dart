@@ -18,35 +18,38 @@ void checkForAnnouncements() {
   Workmanager().executeTask((task, inputData) async {
     if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
 
-    pref = await SharedPreferences.getInstance();
+    SharedPreferences pref = await SharedPreferences.getInstance();
     String department = pref.getString("department") ?? "ΙΩΑΝΝΙΝΩΝ";
     int id = pref.getInt("lastID") ?? 1;
     print(id);
     print(department);
-    Map announcementMap =
+    Map? announcementMap =
         await Api().apiGetLatestAnnouncementFromDepartment(department, id);
-    Announcement announcement = Announcement.fromAPI(announcementMap);
-    await pref.setInt("lastID", announcement.id);
-    NotificationService().sendNotification(announcement);
+    if (announcementMap != null) {
+      Announcement announcement = Announcement.fromAPI(announcementMap);
+      await pref.setInt("lastID", announcement.id);
+      print(announcement.id);
+      await pref.setString("department", announcement.department);
+      NotificationService().sendNotification(announcement);
+    }
     return true;
   });
 }
 
-String? selectedNotificationPayload;
-late SharedPreferences pref;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
   Workmanager().initialize(
     checkForAnnouncements, // The top level function, aka callbackDispatcher
   );
   Workmanager().registerPeriodicTask(
     "task-identifier",
     "simpleTask",
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
     frequency: const Duration(minutes: 15),
   );
-  await NotificationService().init();
 
   //NotificationService().sendNotification();
   runApp(const MyApp());

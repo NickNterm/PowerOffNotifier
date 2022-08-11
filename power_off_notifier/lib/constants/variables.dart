@@ -1,4 +1,4 @@
-const urlAddress = "http://130.185.234.70:3337/";
+const urlAddress = "http://130.185.234.70:3337";
 const departements = [
   "ΑΙΤΩΛΟΑΚΑΡΝΑΝΙΑΣ",
   "ΑΡΓΟΛΙΔΑΣ",

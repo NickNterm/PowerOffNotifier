@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.iqsoft.poweroffnotifier">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="Power Off Notifier"
         android:name="${applicationName}"

@@ -22,7 +22,7 @@ class DepartmentAnnouncementsController extends ChangeNotifier with Api {
     _announcements = localList;
     if (_announcements!.isNotEmpty) {
       SharedPreferences.getInstance()
-          .then((pref) => pref.setInt("lastID", _announcements!.last.id));
+          .then((pref) => pref.setInt("lastID", _announcements!.first.id));
     }
 
     _hasData = true;
