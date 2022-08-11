@@ -21,14 +21,11 @@ void checkForAnnouncements() {
     SharedPreferences pref = await SharedPreferences.getInstance();
     String department = pref.getString("department") ?? "ΙΩΑΝΝΙΝΩΝ";
     int id = pref.getInt("lastID") ?? 1;
-    print(id);
-    print(department);
     Map? announcementMap =
         await Api().apiGetLatestAnnouncementFromDepartment(department, id);
     if (announcementMap != null) {
       Announcement announcement = Announcement.fromAPI(announcementMap);
       await pref.setInt("lastID", announcement.id);
-      print(announcement.id);
       await pref.setString("department", announcement.department);
       NotificationService().sendNotification(announcement);
     }
@@ -51,7 +48,6 @@ void main() async {
     frequency: const Duration(minutes: 15),
   );
 
-  //NotificationService().sendNotification();
   runApp(const MyApp());
 }
 

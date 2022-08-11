@@ -30,6 +30,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
               builder: (_) => const MainScreen(),
             ),
           );
+        } else {
+          const snackBar = SnackBar(
+            content: Text(
+                'Υπάρχει κάποιο πρόβλημα στην λήψη των δεδομενων. Προσπαθήστε ξανα αργότερα'),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -45,6 +52,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
               builder: (_) => const MainScreen(),
             ),
           );
+        } else {
+          const snackBar = SnackBar(
+            content: Text(
+                'Υπάρχει κάποιο πρόβλημα στην λήψη των δεδομενων. Προσπαθήστε ξανα αργότερα'),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }
     });

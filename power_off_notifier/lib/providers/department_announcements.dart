@@ -14,19 +14,20 @@ class DepartmentAnnouncementsController extends ChangeNotifier with Api {
     _announcements = null;
     List<Announcement> localList = [];
 
-    List<Map> announcementsMap =
+    List<Map>? announcementsMap =
         await apiGetAnnouncementFromDepartment(department);
-    for (var map in announcementsMap) {
-      localList.add(Announcement.fromAPI(map));
-    }
-    _announcements = localList;
-    if (_announcements!.isNotEmpty) {
-      SharedPreferences.getInstance()
-          .then((pref) => pref.setInt("lastID", _announcements!.first.id));
-    }
+    if (announcementsMap != null) {
+      for (var map in announcementsMap) {
+        localList.add(Announcement.fromAPI(map));
+      }
+      _announcements = localList;
+      if (_announcements!.isNotEmpty) {
+        SharedPreferences.getInstance()
+            .then((pref) => pref.setInt("lastID", _announcements!.first.id));
+      }
 
-    _hasData = true;
-
+      _hasData = true;
+    }
     notifyListeners();
     return _hasData;
   }
