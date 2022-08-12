@@ -1,4 +1,6 @@
 const urlAddress = "http://130.185.234.70:3337";
+const apiToken =
+    "oOQLuUBPq1ZfeZxXO3TJo0Y3E3iB0btrC0JoiySl3udlapBXKnr99pMxtM5TTal8";
 const departements = [
   "ΑΙΤΩΛΟΑΚΑΡΝΑΝΙΑΣ",
   "ΑΡΓΟΛΙΔΑΣ",

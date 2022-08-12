@@ -21,6 +21,7 @@ void checkForAnnouncements() {
     SharedPreferences pref = await SharedPreferences.getInstance();
     String department = pref.getString("department") ?? "ΙΩΑΝΝΙΝΩΝ";
     int id = pref.getInt("lastID") ?? 1;
+    id = id - 1;
     Map? announcementMap =
         await Api().apiGetLatestAnnouncementFromDepartment(department, id);
     if (announcementMap != null) {
@@ -37,7 +38,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   Workmanager().initialize(
-    checkForAnnouncements, // The top level function, aka callbackDispatcher
+    checkForAnnouncements,
+    isInDebugMode: true,
   );
   Workmanager().registerPeriodicTask(
     "task-identifier",

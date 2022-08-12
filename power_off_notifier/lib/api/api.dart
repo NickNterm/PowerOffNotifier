@@ -13,7 +13,8 @@ class Api {
           'Accept': '*/*',
           'Accept-Encoding': 'gzip, deflate, br',
           'Connection': 'keep-alive',
-          'Content-Type': 'application/json; charset=utf-8'
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer $apiToken',
         },
       );
       final data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -34,7 +35,8 @@ class Api {
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate, br',
         'Connection': 'keep-alive',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'Bearer $apiToken',
       },
     );
     final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -43,7 +45,6 @@ class Api {
           .map<Map>((dynamic e) => e as Map<String, dynamic>)
           .toList()
           .first;
-      print("this is before return");
       return announcement;
     } catch (_) {
       return null;
