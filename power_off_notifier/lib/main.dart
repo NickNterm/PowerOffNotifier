@@ -41,14 +41,11 @@ void main() async {
   Workmanager().cancelAll();
   Workmanager().initialize(
     checkForAnnouncements,
-    isInDebugMode: true,
   );
   Workmanager().registerPeriodicTask(
     "PowerOffNotifierNotification",
     "showNotification",
-    constraints: Constraints(
-      networkType: NetworkType.connected,
-    ),
+    constraints: Constraints(networkType: NetworkType.connected),
   );
 
   runApp(const MyApp());
