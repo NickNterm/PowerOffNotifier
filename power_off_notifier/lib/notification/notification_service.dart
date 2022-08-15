@@ -13,11 +13,10 @@ class NotificationService {
   NotificationService._internal();
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('bolt_icon');
 
     const InitializationSettings initializationSettings =
-        InitializationSettings(
-            android: initializationSettingsAndroid, macOS: null);
+        InitializationSettings(android: initializationSettingsAndroid);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: selectNotification);
@@ -28,7 +27,16 @@ class NotificationService {
   }
   void sendNotification(Announcement announcement) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails("0", "mainNotification");
+        AndroidNotificationDetails(
+      "0",
+      "Announcement",
+      enableLights: true,
+      fullScreenIntent: true,
+      visibility: NotificationVisibility.public,
+      importance: Importance.high,
+      priority: Priority.high,
+      styleInformation: BigTextStyleInformation(''),
+    );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
