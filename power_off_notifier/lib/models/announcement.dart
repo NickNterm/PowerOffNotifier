@@ -26,34 +26,12 @@ class Announcement {
 
     String stringEndDate = map["end_date"];
 
-    if (stringEndDate.split(" ")[2] == "πμ") {
-      stringEndDate = stringEndDate.split(" ")[0] +
-          " " +
-          stringEndDate.split(" ")[1] +
-          " AM";
-    } else {
-      stringEndDate = stringEndDate.split(" ")[0] +
-          " " +
-          stringEndDate.split(" ")[1] +
-          " PM";
-    }
-    if (stringStartDate.split(" ")[2] == "πμ") {
-      stringStartDate = stringStartDate.split(" ")[0] +
-          " " +
-          stringStartDate.split(" ")[1] +
-          " AM";
-    } else {
-      stringStartDate = stringStartDate.split(" ")[0] +
-          " " +
-          stringStartDate.split(" ")[1] +
-          " PM";
-    }
     Color color = Colors.white;
-    if (DateFormat("dd/MM/yyyy hh:mm:ss a")
+    if (DateFormat("yyyy-MM-ddThh:mm:ss")
         .parse(stringStartDate)
         .isAfter(DateTime.now())) {
       color = Colors.green;
-    } else if (DateFormat("dd/MM/yyyy hh:mm:ss a")
+    } else if (DateFormat("yyyy-MM-ddThh:mm:ss")
         .parse(stringEndDate)
         .isAfter(DateTime.now())) {
       color = Colors.orange;
@@ -65,8 +43,10 @@ class Announcement {
       municipality: map["municipality"],
       description: map["description"],
       type: map["type"],
-      startDate: map["start_date"],
-      endDate: map["end_date"],
+      startDate: DateFormat("dd/MM/yyyy hh:mm")
+          .format(DateFormat("yyyy-MM-ddThh:mm:ss").parse(stringStartDate)),
+      endDate: DateFormat("dd/MM/yyyy hh:mm")
+          .format(DateFormat("yyyy-MM-ddThh:mm:ss").parse(stringEndDate)),
       department: map["department"],
       color: color,
     );

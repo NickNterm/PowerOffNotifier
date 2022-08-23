@@ -3,6 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:power_off_notifier/constants/colors.dart';
 import 'package:power_off_notifier/constants/variables.dart';
 import 'package:power_off_notifier/models/announcement.dart';
+import 'package:power_off_notifier/pages/about/about_screen.dart';
 import 'package:power_off_notifier/providers/department_announcements.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,7 +36,15 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      appBar: AppBar(title: const Text("Power Off Notifier")),
+      appBar: AppBar(title: const Text("Power Off Notifier"), actions: [
+        IconButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const AboutScreen()));
+          },
+          icon: const Icon(Icons.info),
+        )
+      ]),
       body: SingleChildScrollView(
         child: Column(
           children: [
