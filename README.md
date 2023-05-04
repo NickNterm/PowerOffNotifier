@@ -3,7 +3,7 @@
 
 This is a small personal project that help everyone to get notification from the site: https://siteapps.deddie.gr/Outages2Public
 
-In this project i used: Flutter, FastAPI
+In this project i used: Flutter, FastAPI, Python
 
 ## Authors
 
