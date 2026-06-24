@@ -1,111 +1,109 @@
+<p align="center">
+  <img src="imagesForPlaystore/icon.png" width="96" alt="Power Off Notifier icon" />
+</p>
 
-# Deddhe Custom Notifier App
+<h1 align="center">Power Off Notifier</h1>
 
-This is a small personal project that help everyone to get notification from the site: https://siteapps.deddie.gr/Outages2Public
+<p align="center">Get notified about scheduled DEDDIE power outages in your area — without refreshing a clunky government site.</p>
 
-In this project i used: Flutter, FastAPI, Python
+---
 
-## Authors
+DEDDIE (the Greek electricity distribution operator) publishes planned power outages on [siteapps.deddie.gr](https://siteapps.deddie.gr/Outages2Public), but there's no way to subscribe to your department. This project scrapes that site, stores the announcements, and pushes them to a mobile app so you get notified the moment a new outage is posted for your area.
 
-- [@nicknterm](https://www.github.com/nicknterm)
+## How it works
 
+```
+[DEDDIE site]  →  scraper (cron)  →  [PostgreSQL]  →  FastAPI  →  Flutter app
+```
+
+1. **Scraper** (`WebScrapping/`) — a Python script, run on a cron, that scrapes new outage announcements and stores them in Postgres, de-duplicated per department.
+2. **API** (`fastAPI/`) — a FastAPI service exposing the announcements per department.
+3. **App** (`power_off_notifier/`) — a Flutter app that polls the API and notifies the user about outages in their selected department.
+
+## Tech stack
+
+- **Mobile** — Flutter (Dart)
+- **Backend** — FastAPI (Python)
+- **Database** — PostgreSQL
+- **Scraping** — Python, scheduled via cron
+- **Deployment** — systemd service (`fastapi.service`)
 
 ## API Reference
 
 #### Get all items
 
 ```http
-  GET /
+GET /
 ```
-
 
 #### Get latest announcements
 
 ```http
-  GET /latest
+GET /latest
 ```
 
 | Parameter    | Type      | Description                                             |
 | :----------- | :-------- | :------------------------------------------------------ |
-| `department` | `string`  | **Required**. name of department                        |
-| `id`         | `integer` | **Required**. the id of the last announcement you have  |
+| `department` | `string`  | **Required**. Name of department                        |
+| `id`         | `integer` | **Required**. ID of the last announcement you have      |
 
-#### latest(department, id)
-
-it returns a list of the latest announcements for the department you are looking for
+Returns the announcements newer than `id` for the given department.
 
 #### Get announcements count
 
 ```http
-  GET /count
+GET /count
 ```
 
 | Parameter    | Type      | Description         |
 | :----------- | :-------- | :------------------ |
-| `department` | `string`  | name of department  |
+| `department` | `string`  | Name of department  |
 
-#### latest(department, id)
-
-it returns a return the number of the announcements you have in the database
+Returns the number of announcements stored for the department.
 
 #### Get announcements by department
 
 ```http
-  GET /{department}
+GET /{department}
 ```
 
 | Parameter    | Type      | Description                       |
 | :----------- | :-------- | :-------------------------------- |
-| `department` | `string`  | **Required**. name of department  |
+| `department` | `string`  | **Required**. Name of department  |
 
-#### latest(department, id)
-
-it returns all the announcements for the selected department
+Returns all announcements for the selected department.
 
 ## Deployment
 
-To deploy this project first of all you have to get a server to run the whole application
+Provision a server, then:
 
-install postgresql and pg admin
-``` 
+**1. Install PostgreSQL**
+
+```bash
 sudo apt install postgresql postgresql-contrib
-sudo apt install pgadmin4
-```
-
-run and connect to postgres
-
-```
 sudo -u postgres psql
-```
-
-then enter
-```
-\password
-```
-and enter your password
-
-then quit with 
-```
+\password          # set a password
 \q
 ```
 
-Open pg admin
-Register new server
-Create a new database
-Create a table with name deddhe
+Create a database and a table named `deddhe`.
 
-with everthing set up create a service for the api.
-first copy the fastapi.service to the dir /etc/systemd/system
+**2. Run the API as a service**
 
-then edit WorkingDirectory, User, Group accordingly
+Copy `fastapi.service` to `/etc/systemd/system`, edit `WorkingDirectory`, `User`, and `Group`, then:
 
-and execute the commands
-```
+```bash
 sudo systemctl daemon-reload
-sudo systemctl start fastapi.service
-sudo systemctl enable fastapi.service
+sudo systemctl enable --now fastapi.service
 sudo systemctl status fastapi.service
 ```
 
-afterwards set up a cron with the python webScapping script and you are ready to go.
+**3. Schedule the scraper** — add the `WebScrapping/` script to a cron job and you're ready to go.
 
+## Author
+
+- [@nicknterm](https://www.github.com/nicknterm)
+
+## License
+
+Released under the [Apache License 2.0](LICENSE).
